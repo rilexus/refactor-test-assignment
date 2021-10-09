@@ -6,9 +6,9 @@ function RiskLevelSelector({ riskLevel = 10, minRiskLevel = 3, maxRiskLevel = 25
     const [selected, setSelected] = useState(riskLevel);
 
     function onChange(e){
-        const riskLevel = parseInt(e.target.value);
-        setSelected(e.target.value);
-        onChangeRiskLevel(riskLevel);
+        const newRiskLevel = parseInt(e.target.value);
+        setSelected(newRiskLevel);
+        onChangeRiskLevel(newRiskLevel);
     }
 
     function Options(){

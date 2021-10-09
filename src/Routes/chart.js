@@ -87,13 +87,13 @@ function Chart({ timeSeries }){
     }, [timeSeries])
 
     return (
-        <div>
+        <section>
             <canvas
                 ref={canvasRef}
                 width={600}
                 height={400}
             />
-        </div>
+        </section>
     );
 }
 

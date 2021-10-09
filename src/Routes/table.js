@@ -7,7 +7,7 @@ function Table({ timeSeries }){
     const dataMedian = timeSeries.median.map(v => v.y);
     const dataBad = timeSeries.lower05.map(v => v.y);
 
-    const tableRows = months.map((entry, idx) => (
+    const TableRows = () => months.map((entry, idx) => (
         <tr key={idx}>
             <td>{entry}</td>
             <td>{dataGood[idx]}</td>
@@ -16,7 +16,7 @@ function Table({ timeSeries }){
         </tr>
     ));
 
-    const tableHeader = (
+    const TableHeader = () => (
         <tr>
             <th key="month">month</th>
             <th key="good">good</th>
@@ -26,14 +26,16 @@ function Table({ timeSeries }){
     );
 
     return (
-        <table>
-            <thead>
-                {tableHeader}
-            </thead>
-            <tbody>
-                {tableRows}
-            </tbody>
-        </table>
+        <section>
+            <table>
+                <thead>
+                    <TableHeader />
+                </thead>
+                <tbody>
+                    <TableRows />
+                </tbody>
+            </table>
+        </section>
     );
 }
 
