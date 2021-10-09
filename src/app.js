@@ -1,23 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Menu from './menu';
 import RiskLevelSelector from './risk-level-selector';
-import Table from './table';
-import Chart from './chart';
+
+const Table = lazy(() => import('./table'));
+const Chart = lazy(() => import('./chart'));
+
 import { calculateTimeSeries } from './utils';
 import cones from './../cones';
 
 export default function App(){
-    const [riskLevel, setRiskLevel] = useState(10)
-
-    const initalCone = cones.filter(cone => cone.riskLevel === riskLevel)
-    const [cone, setCone] = useState(initalCone[0])
-
-    const [showError, setShowError] = useState(false)
+    const [riskLevel, setRiskLevel] = useState(10);
+    const getCone = () => cones.filter(cone => cone.riskLevel === riskLevel);
+    const initalCone = getCone();
+    const [cone, setCone] = useState(initalCone[0]);
+    const [showError, setShowError] = useState(false);
 
     const timeSeries = useMemo(() => {
         if(!cone) return null;
-        const { mu, sigma } = cone
+        const { mu, sigma } = cone;
         return calculateTimeSeries({
             mu,
             sigma,
@@ -25,7 +26,7 @@ export default function App(){
             initialSum: 10000,
             monthlySum: 200,
             fee: 0.01
-        })
+        });
     }, [cone])
 
     function onChangeRiskLevel(riskLevel){
@@ -33,7 +34,7 @@ export default function App(){
     }
 
     useEffect(() => {
-        const newCone = cones.filter(cone => cone.riskLevel == riskLevel)
+        const newCone = getCone()
         if(newCone.length > 0){
             setCone(newCone[0]);
             setShowError(false);
@@ -48,15 +49,17 @@ export default function App(){
                 <Menu/>
                 <RiskLevelSelector riskLevel={riskLevel} onChangeRiskLevel={onChangeRiskLevel}/>
                 {showError && <p>Ooops...Try another Risk level.</p>}
-                <Switch>
-                    <Route exact path={["/", "/table"]}>
-                        <Table timeSeries={timeSeries}/>
-                    </Route>
-                    <Route path="/chart">
-                        <Chart timeSeries={timeSeries}/>
-                    </Route>
-                    <Route render={() => <h1>Not found</h1>} />
-                </Switch>
+                <Suspense fallback="Loading">
+                    <Switch>
+                        <Route exact path={["/", "/table"]}>
+                            <Table timeSeries={timeSeries}/>
+                        </Route>
+                        <Route path="/chart">
+                            <Chart timeSeries={timeSeries}/>
+                        </Route>
+                        <Route render={() => <h1>Not found</h1>} />
+                    </Switch>
+                </Suspense>
             </div>
         </Router>
     );

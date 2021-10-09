@@ -71,9 +71,15 @@ function Chart({ timeSeries }){
             options
         };
 
-        const canvas = canvasRef.current;
-        const context = canvas.getContext("2d");
-        chartRef.current = new ChartJs(context, config);
+        if(chartRef.current){
+            chartRef.current.data = data
+            chartRef.current.update()
+        }else{
+            const canvas = canvasRef.current;
+            const context = canvas.getContext("2d");
+            chartRef.current = new ChartJs(context, config);
+        }
+
     }
 
     useEffect(() => {
