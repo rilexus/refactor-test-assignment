@@ -2,12 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {Chart as ChartJs} from 'chart.js';
 
-function Chart({ timeSeries }){
 
+function useChart(timeSeries){
     const canvasRef = useRef();
     const chartRef = useRef();
 
-    function drawChart(){
+    function drawChart(timeSeries){
         if(!timeSeries) return;
 
         const labels = timeSeries.median.map((v, idx) => idx % 12 == 0 ? idx/12 : '');
@@ -83,9 +83,16 @@ function Chart({ timeSeries }){
     }
 
     useEffect(() => {
-        drawChart();
+        drawChart(timeSeries);
     }, [timeSeries])
 
+    return canvasRef;
+}
+
+function Chart({ timeSeries }){
+
+    const canvasRef = useChart(timeSeries);
+    
     return (
         <section>
             <canvas
