@@ -1,27 +1,14 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import {Chart as ChartJs} from 'chart.js';
-import {calculateTimeSeries} from './utils';
-import cones from './../cones';
 
-class Chart extends React.Component {
 
-    componentDidMount() {
-        this.drawChart()
-    }
+function useChart(timeSeries){
+    const canvasRef = useRef();
+    const chartRef = useRef();
 
-    drawChart() {
-        const {riskLevel} = this.props;
-        const {mu, sigma} = cones.filter(cone => cone.riskLevel == riskLevel)[0];
-        const fee = 0.01;
-
-        const timeSeries = calculateTimeSeries({
-            mu,
-            sigma,
-            years: 10,
-            initialSum: 10000,
-            monthlySum: 200,
-            fee
-        });
+    function drawChart(timeSeries){
+        if(!timeSeries) return;
 
         const labels = timeSeries.median.map((v, idx) => idx % 12 == 0 ? idx/12 : '');
         const dataMedian = timeSeries.median.map(v => v.y);
@@ -52,7 +39,7 @@ class Chart extends React.Component {
                     pointRadius: 0
                 }
             ],
-                labels
+            labels
         };
 
         const options = {
@@ -84,22 +71,41 @@ class Chart extends React.Component {
             options
         };
 
-        const canvas = this.canvas;
-        const context = canvas.getContext("2d");
-        const myChart = new ChartJs(context, config);
+        if(chartRef.current){
+            chartRef.current.data = data;
+            chartRef.current.update();
+        }else{
+            const canvas = canvasRef.current;
+            const context = canvas.getContext("2d");
+            chartRef.current = new ChartJs(context, config);
+        }
+
     }
 
-    render() {
-        return (
-            <div>
-                <canvas
-                    ref={ref => this.canvas = ref}
-                    width={600}
-                    height={400}
-                />
-            </div>
-        );
-    }
+    useEffect(() => {
+        drawChart(timeSeries);
+    }, [timeSeries])
+
+    return canvasRef;
 }
+
+function Chart({ timeSeries }){
+
+    const canvasRef = useChart(timeSeries);
+    
+    return (
+        <section>
+            <canvas
+                ref={canvasRef}
+                width={600}
+                height={400}
+            />
+        </section>
+    );
+}
+
+Chart.propTypes = {
+    timeSeries: PropTypes.object,
+};
 
 export default Chart;
