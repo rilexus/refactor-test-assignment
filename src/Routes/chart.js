@@ -72,8 +72,8 @@ function Chart({ timeSeries }){
         };
 
         if(chartRef.current){
-            chartRef.current.data = data
-            chartRef.current.update()
+            chartRef.current.data = data;
+            chartRef.current.update();
         }else{
             const canvas = canvasRef.current;
             const context = canvas.getContext("2d");
@@ -83,7 +83,7 @@ function Chart({ timeSeries }){
     }
 
     useEffect(() => {
-        drawChart()
+        drawChart();
     }, [timeSeries])
 
     return (

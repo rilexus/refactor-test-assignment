@@ -11,7 +11,7 @@ function RiskLevelSelector({ riskLevel = 10, minRiskLevel = 3, maxRiskLevel = 25
         onChangeRiskLevel(newRiskLevel);
     }
 
-    function Options(){
+    const Options = () => {
         const options = [];
         for(let k=1; k<=maxRiskLevel; ++k) {
             options.push(
